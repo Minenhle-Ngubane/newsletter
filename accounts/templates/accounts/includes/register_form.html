@@ -1,0 +1,49 @@
+{% load widget_tweaks %}
+
+{% if error_message %}
+    <div class="alert alert-danger">{{ error_message }}</div>
+{% endif %}
+
+<form 
+    hx-post="{% url 'accounts:register' %}"
+    hx-trigger="submit"
+    hx-target="#register-form"
+    hx-swap="outerHTML"
+    id="register-form"
+    novalidate
+>
+    {% csrf_token %}
+    <div class="mb-3 text-start">
+        <label class="form-label">Username</label>
+        {% render_field form.username class="form-control" placeholder="Enter username" %}
+        {% if form.username.errors %}
+            <samll class="text-danger mt-2">
+                {{ form.username.errors|join:", " }}
+            </samll>
+        {% endif %}
+    </div>
+    <div class="mb-3 text-start">
+        <label class="form-label">Password</label>
+        {% render_field form.password1 class="form-control" placeholder="Password" %}
+        {% if form.password1.errors %}
+            <samll class="text-danger mt-2">
+                {{ form.password1.errors|join:", " }}
+            </samll>
+        {% endif %}
+    </div>
+    <div class="mb-3 text-start">
+        <label class="form-label">Confirm Password</label>
+        {% render_field form.password2 class="form-control" placeholder="Confirm password" %}
+        {% if form.password2.errors %}
+            <samll class="text-danger mt-2">
+                {{ form.password2.errors|join:", " }}
+            </samll>
+        {% endif %}
+    </div>
+    <button 
+        type="submit" 
+        class="btn btn-primary w-100 py-2"
+    >
+        Register
+    </button>
+</form>
