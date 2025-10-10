@@ -1,0 +1,15 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Subscribe to Our Newsletter{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column justify-content-center align-items-center vh-100 text-center bg-light" id="subscribe-page-content">
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">{{ newsletter.name }} Newsletter</h1>
+            <p class="text-muted mb-0">Subscribe to our newsletter and never miss important updates or announcements.</p>
+        </div>
+        <div class="card shadow-sm border-0 rounded-4 p-4" style="max-width: 420px; width: 100%;">
+            {% include "subscriber/includes/newsletter_subscribe_form.html" %}
+        </div>
+    </div>
+{% endblock %}

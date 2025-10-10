@@ -1,0 +1,44 @@
+<div class="col-md-6 col-lg-4" id="card-{{ newsletter.id }}">
+    <div class="card shadow-sm border-0 h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+                <h5 class="card-title fw-semibold mb-2">
+                    <a href="{% url 'subscriber:newsletter_details' newsletter.id %}" class="text-decoration-none text-primary">
+                        {{ newsletter.name }}
+                    </a>
+                </h5>
+                <div class="d-flex align-items-center mt-1">
+                    <a 
+                        class="text-success text-break small" 
+                        href="{% url 'subscriber:newsletter_subscribe' newsletter.id %}" 
+                        target="_blank"
+                    >
+                        Subscribe page 
+                    </a>
+                </div>
+
+            </div>
+            <div class="mt-4 d-flex justify-content-between">
+                <button 
+                    class="btn btn-outline-primary btn-sm px-3" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#editModal-{{ newsletter.id }}"
+
+                    hx-get="{% url 'subscriber:newsletter_update' newsletter.id %}"
+                    hx-trigger="click"
+                    hx-target="#edit-form-{{ newsletter.id }}"
+                    hx-swap="outerHTML"
+                >
+                    Edit
+                </button>
+                <button 
+                    class="btn btn-outline-danger btn-sm px-3"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal-{{ newsletter.id }}"
+                >
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -3,7 +3,7 @@ import json
 from django.views import View
 from django.urls import reverse
 from django.http import HttpResponse
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
@@ -87,5 +87,5 @@ class LogoutView(LoginRequiredMixin, View):
         logout(request)
 
         response = HttpResponse()
-            response["HX-Redirect"] = reverse("accounts:login")
+        response["HX-Redirect"] = reverse("accounts:login")
         return response
