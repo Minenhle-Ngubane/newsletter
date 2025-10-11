@@ -1,0 +1,45 @@
+<tr id="row-{{ subscriber.id }}">
+    <td>
+        {{ subscriber.name }}
+    </td>
+    <td>
+        {{ subscriber.email }}
+        <br>
+        {% if subscriber.is_verified %}
+            <small class="text-success">Verified</small>
+        {% else %}
+            <small class="text-secondary">Unverified</small>
+        {% endif %}
+    </td>
+    <td>
+        {% if subscriber.is_active %}
+            <small class="badge bg-success">Active</small>
+        {% else %}
+            <small class="badge bg-danger">Inactive</small>
+        {% endif %}
+    </td>
+    <td>
+        {{ subscriber.date_subscribed|date:"M d, Y H:i" }}
+    </td>
+    <td class="text-end">
+        <button 
+            hx-get="{% url 'subscriber:subscriber_update' subscriber.id %}"
+            hx-trigger="click"
+            hx-target="#admin-edit-subscriber-form-{{ subscriber.id }}"
+            hx-swap="innerHTML"
+
+            class="btn btn-sm btn-outline-secondary" 
+            data-bs-toggle="modal"
+            data-bs-target="#editSubscriberModal-{{ subscriber.id }}"
+        >
+            Edit
+        </button>
+        <button 
+            class="btn btn-sm btn-outline-danger" 
+            data-bs-toggle="modal"
+            data-bs-target="#deleteModal-{{ subscriber.id }}"
+        >
+            Delete
+        </button>
+    </td>
+</tr>

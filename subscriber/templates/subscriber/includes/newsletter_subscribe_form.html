@@ -10,7 +10,7 @@
     {% csrf_token %}
     <div class="mb-3">
         <label for="name" class="form-label">Full Name</label>
-        {% render_field form.name class="form-control form-control-lg" placeholder="Enter your full name" %}
+        {% render_field form.name class="form-control" placeholder="Enter your full name" %}
         {% if form.name.errors %}
             <samll class="text-danger mt-2">
                 {{ form.name.errors|join:", " }}
@@ -19,7 +19,7 @@
     </div>
     <div class="mb-3">
         <label for="email" class="form-label">Email Address</label>
-        {% render_field form.email class="form-control form-control-lg" placeholder="Enter your email" %}
+        {% render_field form.email class="form-control" placeholder="Enter your email" %}
         {% if form.email.errors %}
             <samll class="text-danger mt-2">
                 {{ form.email.errors|join:", " }}

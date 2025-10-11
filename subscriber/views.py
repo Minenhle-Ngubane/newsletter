@@ -12,7 +12,7 @@ from .forms import SubscriberForm, NewsletterForm
 from .models import Subscriber, Newsletter
 
 
-
+# Newsletter
 class NewsletterListView(LoginRequiredMixin, View):
     
     def get(self, request):
@@ -146,7 +146,7 @@ class NewletterDeleteView(LoginRequiredMixin, View):
         response["HX-Trigger"] = json.dumps({
             "removeElement": f"card-{pk}",
             "closeModal": "",
-        }, )
+        })
         return response
         
 class NewsletterSubscribeView(View):
@@ -200,9 +200,9 @@ class NewsletterSubscribeView(View):
         response["HX-Retarget"] = f"#newsletter-subscriber-form"
         return response  
         
-        
-class SubscribeView(View):
-    form_template = "subscriber/includes/subscription_form.html"
+
+# Subscriber
+class SubscriberCreateView(LoginRequiredMixin, View):
     
     def _send_email(self, cleaned_data, verify_url):
         """
@@ -233,49 +233,120 @@ class SubscribeView(View):
         resend.Emails.send(params)
 
     def get(self, request, pk):
+        newsletter = get_object_or_404(
+            Newsletter, 
+            owner=request.user, 
+            id=pk
+        )
         form = SubscriberForm()
         
         return render(
             request,
-            "subscribe/subscribe_page.html",
+            "subscriber/includes/admin/create_subscriber_form.html",
             {
                 "form": form,
+                "newsletter": newsletter,   
             }
         )
         
-    def post(self, request):
+    def post(self, request, pk):
+        newsletter = get_object_or_404(
+            Newsletter, 
+            owner=request.user, 
+            id=pk
+        )
+        
         form = SubscriberForm(request.POST)
 
         if form.is_valid():
             subscriber = form.save(commit=False)
-            subscriber.is_verified = False
+            subscriber.newsletter = newsletter
             subscriber.save()
             
-            verify_url = request.build_absolute_uri(
-                reverse("verify-subscriber", args=[subscriber.verification_token])
-            )
-            
-            self._send_email(form.cleaned_data, verify_url)
-            
-            
-            return render(
+            # verify_url = request.build_absolute_uri(
+            #     reverse("verify-subscriber", args=[subscriber.verification_token])
+            # )
+
+            response = render(
                 request, 
-                "subscriber/includes/subscribe_form.html", 
+                "subscriber/includes/admin/subscriber_row_item.html", 
                 {
-                    "form": SubscriberForm(),
-                    "success_message": "Thank you for subscribing!",
+                    "subscriber": subscriber,
                 }
             )
+          
+            response["HX-Retarget"] = "#subscriber-table"
+            response["HX-Reswap"] = "afterbegin"
+            response["HX-Trigger"] = "closeModal"
+            return response
 
         return render(
             request, 
-            "subscriber/includes/subscribe_form.html",
+            "subscriber/includes/admin/create_subscriber_form.html",
             {
                 "form": form,
-                "error_message": "Please correct the field error below.",
+                "newsletter": newsletter,
             }
         )
     
+class SubscriberUpdateView(LoginRequiredMixin, View):
+    
+    def get(self, request, pk):
+        subscriber = get_object_or_404(Subscriber, id=pk)
+        form = SubscriberForm(instance=subscriber)
+        
+        return render(
+            request,
+            "subscriber/includes/admin/update_subscriber_form.html",
+            {
+                "form": form, 
+                "subscriber": subscriber,
+            }
+        )
+        
+    def post(self, request, pk):
+        subscriber = get_object_or_404(Subscriber, id=pk)
+        form = SubscriberForm(request.POST, instance=subscriber)
+        
+        if form.is_valid():
+            new_subscriber = form.save()
+            
+            response = render(
+                request,
+                "subscriber/includes/admin/subscriber_row_item.html",
+                {
+                    "subscriber": new_subscriber,
+                }
+            )
+            
+            response["HX-Reswap"] = "outerHTML"
+            response["HX-Retarget"] = f"#row-{pk}"
+            response["HX-Trigger"] = "closeModal"
+            return response
+        
+        response = render(
+            request,
+            "subscriber/includes/admin/update_subscriber_form.html",
+            {
+                "form": form,
+                "subscriber": subscriber
+            }
+        )
+        return response
+    
+class SubscriberDeleteView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+        subscriber = get_object_or_404(Subscriber, id=pk)
+        subscriber.delete()
+        
+        response = HttpResponse()
+        response["HX-Trigger"] = json.dumps({
+            "removeElement": f"row-{pk}",
+            "closeModal": "",
+        })
+        return response
+
     
 class VerifySubscriberView(View):
     def get(self, request, token):
@@ -286,8 +357,7 @@ class VerifySubscriberView(View):
         )
         subscriber.verify()
         return redirect("email-verified")
-    
-    
+     
 class EmailVerifiedView(View):
     template_name = "newsletter/email_verified.html"
 

@@ -1,0 +1,32 @@
+{% load widget_tweaks %}
+<form
+    hx-post="{% url 'subscriber:subscriber_create' newsletter.id %}"
+    hx-trigger="submit"
+
+    novalidate
+>
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        {% render_field form.name class="form-control" %}
+        {% if form.name.errors %}
+            <samll class="text-danger mt-2">
+                {{ form.name.errors|join:", " }}
+            </samll>
+        {% endif %}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        {% render_field form.email class="form-control" %}
+        {% if form.email.errors %}
+            <samll class="text-danger mt-2">
+                {{ form.email.errors|join:", " }}
+            </samll>
+        {% endif %}
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">
+            Save
+        </button>
+    </div>
+</form>

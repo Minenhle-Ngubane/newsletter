@@ -14,7 +14,7 @@ class RegisterView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect("dashboard:dashboard")
+            return redirect("subscriber:newsletter_list")
         
         form = UserCreationForm()
         return render(
@@ -33,7 +33,7 @@ class RegisterView(View):
             login(request, user)
             
             response = HttpResponse()
-            response["HX-Redirect"] = reverse("dashboard:dashboard") 
+            response["HX-Redirect"] = reverse("subscriber:newsletter_list") 
             return response
         
         return render(
@@ -50,7 +50,7 @@ class LoginView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect("dashboard:dashboard")
+            return redirect("subscriber:newsletter_list")
         
         return render(
             request, 
@@ -68,7 +68,7 @@ class LoginView(View):
             login(request, user)
             
             response = HttpResponse()
-            response["HX-Redirect"] = reverse("dashboard:dashboard") 
+            response["HX-Redirect"] = reverse("subscriber:newsletter_list") 
             return response
         
         return render(

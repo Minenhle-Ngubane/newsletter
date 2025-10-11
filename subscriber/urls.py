@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    # Newsletter
     NewsletterListView,
     NewsletterDetailView,
     NewsletterCreateView, 
@@ -8,7 +9,11 @@ from .views import (
     NewletterDeleteView,
     NewsletterSubscribeView,
     
-    SubscribeView,
+    # Subscriber
+    SubscriberCreateView,
+    SubscriberUpdateView,
+    SubscriberDeleteView,
+    
     VerifySubscriberView,
     EmailVerifiedView,
 )
@@ -22,4 +27,8 @@ urlpatterns = [
     path("update/<uuid:pk>/", NewsletterUpdatedView.as_view(), name="newsletter_update"),
     path("delete/<uuid:pk>/", NewletterDeleteView.as_view(), name="newsletter_delete"),
     path("subscribe/<uuid:pk>/", NewsletterSubscribeView.as_view(), name="newsletter_subscribe"),
+    
+    path("subscriber/create/<uuid:pk>/", SubscriberCreateView.as_view(), name="subscriber_create"),
+    path("subscriber/update/<uuid:pk>/", SubscriberUpdateView.as_view(), name="subscriber_update"),
+    path("subscriber/delete/<uuid:pk>/", SubscriberDeleteView.as_view(), name="subscriber_delete"),
 ]
