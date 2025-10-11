@@ -46,3 +46,17 @@ class SubscriberForm(forms.ModelForm):
         if not email:
             raise forms.ValidationError("Email is required.")
         return email
+    
+    
+class SendEmailForm(forms.Form):
+    subject = forms.CharField(
+        label="Subject",
+        max_length=255,
+        widget=forms.TextInput()
+    )
+
+    body = forms.CharField(
+        label="Message Body",
+        widget=forms.Textarea()
+    )
+

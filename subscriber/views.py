@@ -4,11 +4,12 @@ from django.views import View
 from django.urls import reverse
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.mail import send_mass_mail
 from django.template.loader import render_to_string
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import SubscriberForm, NewsletterForm
+from .forms import SubscriberForm, NewsletterForm, SendEmailForm
 from .models import Subscriber, Newsletter
 
 
@@ -204,34 +205,6 @@ class NewsletterSubscribeView(View):
 # Subscriber
 class SubscriberCreateView(LoginRequiredMixin, View):
     
-    def _send_email(self, cleaned_data, verify_url):
-        """
-        Sends an email using the form's cleaned data.
-        """
-        import resend
-        
-        to_email = cleaned_data.get("email")
-        subject = "Please verify your subscription"
-        
-        html_content = render_to_string(
-            "subscriber/includes/email_varification.html", 
-            {
-                "to_email": to_email, 
-                "verify_url": verify_url
-            }
-        )
-        
-        resend.api_key = settings.RESEND_API_KEY
-
-        params: resend.Emails.SendParams = {
-            "from": f"Subscriber App <{settings.DEFAULT_FROM_EMAIL}>",
-            "to": [to_email],
-            "subject": subject,
-            "html": html_content,
-        }
-
-        resend.Emails.send(params)
-
     def get(self, request, pk):
         newsletter = get_object_or_404(
             Newsletter, 
@@ -348,6 +321,67 @@ class SubscriberDeleteView(LoginRequiredMixin, View):
         return response
 
     
+class SendEmailView(LoginRequiredMixin, View):
+      
+    def get(self, request, pk):
+        newsletter = get_object_or_404(
+            Newsletter, 
+            owner=request.user, 
+            id=pk
+        )
+        form = SendEmailForm()
+        
+        return render(
+            request,
+            "subscriber/includes/send_email_form.html",
+            {
+                "form": form,
+                "newsletter": newsletter,
+            }
+        )
+    
+        
+    def post(self, request, pk):
+        newsletter = get_object_or_404(
+            Newsletter,
+            owner=request.user,
+            id=pk,
+        )
+        form = SendEmailForm(request.POST)
+
+        if form.is_valid():
+            subject = form.cleaned_data["subject"]
+            body = form.cleaned_data["body"]
+
+            recipient_list = list(
+                newsletter.subscribers.values_list("email", flat=True)
+            )
+
+            if recipient_list:
+
+                # Prepare bulk email tuples
+                from_email = settings.DEFAULT_FROM_EMAIL
+                messages = [
+                    (subject, body, from_email, [email])
+                    for email in recipient_list
+                ]
+                
+                send_mass_mail(messages, fail_silently=False)
+
+                response = HttpResponse()
+                response["HX-Trigger"] = "closeModal"
+                return response
+
+        return render(
+            request,
+            "subscriber/includes/send_email_form.html",
+            {
+                "form": form, 
+                "newsletter": newsletter
+            },
+        )
+    
+      
 class VerifySubscriberView(View):
     def get(self, request, token):
         subscriber = get_object_or_404(
@@ -363,3 +397,4 @@ class EmailVerifiedView(View):
 
     def get(self, request):
         return render(request, self.template_name)
+    

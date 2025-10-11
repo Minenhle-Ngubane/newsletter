@@ -14,6 +14,9 @@ from .views import (
     SubscriberUpdateView,
     SubscriberDeleteView,
     
+    # Email
+    SendEmailView,
+    
     VerifySubscriberView,
     EmailVerifiedView,
 )
@@ -31,4 +34,6 @@ urlpatterns = [
     path("subscriber/create/<uuid:pk>/", SubscriberCreateView.as_view(), name="subscriber_create"),
     path("subscriber/update/<uuid:pk>/", SubscriberUpdateView.as_view(), name="subscriber_update"),
     path("subscriber/delete/<uuid:pk>/", SubscriberDeleteView.as_view(), name="subscriber_delete"),
+    
+    path("send-email/<uuid:pk>/", SendEmailView.as_view(), name="send_email"),
 ]
