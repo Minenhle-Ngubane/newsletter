@@ -21,72 +21,53 @@
                 Create Newsletter
             </button>
         </div>
+        <div class="row g-4 justify-content-center" id="newsletter-items-grid">
+            {% for newsletter in newsletters %}
+                {% include "subscriber/includes/newsletter_card_item.html" %}
 
-        {% if newsletters %}
-            <div class="row g-4 justify-content-center" id="newsletter-items-grid">
-                {% for newsletter in newsletters %}
-                    {% include "subscriber/includes/newsletter_card_item.html" %}
+                <!-- Edit Modal -->
+                <div class="modal fade" id="editModal-{{ newsletter.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit <strong>"{{ newsletter.name }}"</strong> Newsletter</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% include "subscriber/includes/newsletter_form.html" %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <!-- Edit Modal -->
-                    <div class="modal fade" id="editModal-{{ newsletter.id }}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Edit <strong>"{{ newsletter.name }}"</strong> Newsletter</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    {% include "subscriber/includes/newsletter_form.html" %}
+                <!-- Delete Modal -->
+                <div class="modal fade" id="deleteModal-{{ newsletter.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirm Delete</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <p>
+                                    Are you sure you want to delete <strong>"{{ newsletter.name }}"</strong> Newsletter?
+                                </p>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button 
+                                        hx-post="{% url 'subscriber:newsletter_delete' newsletter.id %}"
+                                        hx-trigger="click"
+                                        class="btn btn-danger"
+                                    >
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Delete Modal -->
-                    <div class="modal fade" id="deleteModal-{{ newsletter.id }}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirm Delete</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <p>
-                                        Are you sure you want to delete <strong>"{{ newsletter.name }}"</strong> Newsletter?
-                                    </p>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                                        <button 
-                                            hx-post="{% url 'subscriber:newsletter_delete' newsletter.id %}"
-                                            hx-trigger="click"
-                                            class="btn btn-danger"
-                                        >
-                                            Delete
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center mt-5">
-                <p class="text-muted fs-5">No newsletters found. Create your first one!</p>
-                <button 
-                    hx-get="{% url 'subscriber:newsletter_create' %}"
-                    hx-trigger="click"
-                    hx-target="#create-newsletter-form"
-                    hx-swap="outerHTML"
-
-                    data-bs-toggle="modal"
-                    data-bs-target="#createNewsletterModal"
-                    class="btn btn-primary mt-3"
-                >
-                    Create Newsletter
-                </button>
-            </div>
-        {% endif %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Create Modal -->

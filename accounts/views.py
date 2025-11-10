@@ -83,9 +83,8 @@ class LoginView(View):
     
 class LogoutView(LoginRequiredMixin, View):
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         logout(request)
-
         response = HttpResponse()
         response["HX-Redirect"] = reverse("accounts:login")
         return response

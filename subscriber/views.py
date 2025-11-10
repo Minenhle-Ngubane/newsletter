@@ -61,6 +61,7 @@ class NewsletterCreateView(LoginRequiredMixin, View):
  
     def post(self, request):
         form = NewsletterForm(request.POST)
+        newsletters = Newsletter.objects.filter(owner=request.user)
         
         if form.is_valid():
             new_newsletter = form.save(commit=False)
@@ -71,7 +72,8 @@ class NewsletterCreateView(LoginRequiredMixin, View):
                 request,
                 "subscriber/includes/newsletter_card_item.html",
                 {
-                    "newsletter": new_newsletter
+                    "newsletter": new_newsletter,
+                    "newsletters": newsletters,
                 }
             )
             
