@@ -1,5 +1,7 @@
 # Newsletter Demo App
 
+![Newsletter Demo](newsletter.gif)
+
 A demo project that allows a user to create and manage multiple newsletters with individual subscription pages, subscriber management, and bulk email sending functionality.
 
 ---
